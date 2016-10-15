@@ -26,6 +26,7 @@
 
 import Foundation
 import UIKit
+import os
 
 /// A view controller that contains pages of products
 final public class ProductsViewController: UIPageViewController {
@@ -74,6 +75,8 @@ final public class ProductsViewController: UIPageViewController {
             stackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -15)
             ])
         
+        purchaseButton.addTarget(self, action: #selector(didTapAddToCart(_:)), for: .touchUpInside)
+        
         pageControl.numberOfPages = products.count
         setup(with: products.first!)
     }
@@ -94,7 +97,12 @@ final public class ProductsViewController: UIPageViewController {
         super.viewDidLoad()
         
         cartView.tapHandler = { [weak self] in
-            let controller = CartViewController()
+            guard let cart = self?.cart else {
+                os_log("No cart available")
+                return
+            }
+            
+            let controller = CartViewController(cart: cart)
             let navController = UINavigationController(rootViewController: controller)
             
             self?.present(navController, animated: true, completion: nil)
@@ -102,6 +110,8 @@ final public class ProductsViewController: UIPageViewController {
     }
     
     // MARK: - Private
+    
+    fileprivate let cart = Cart()
     
     /// A floating shopping cart button
     fileprivate let cartView: CartView = {
@@ -125,7 +135,16 @@ final public class ProductsViewController: UIPageViewController {
         return view
     }()
     
-    let gradientView: GradientView = {
+    @objc fileprivate func didTapAddToCart(_ sender: UIButton) {
+        sender.isEnabled = false
+        
+        let product = products[pageControl.currentPage]
+        cart.add(product)
+        
+        sender.isEnabled = true
+    }
+    
+    fileprivate let gradientView: GradientView = {
         let view = GradientView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isUserInteractionEnabled = false
@@ -156,6 +175,16 @@ final public class ProductsViewController: UIPageViewController {
         return view
     }()
     
+    fileprivate let pageControl: UIPageControl = {
+        // Overriding the standard page control that `UIPageViewController` provides because there isn't a clean way to reposition it
+        let view = UIPageControl(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.currentPage = 0
+        view.isUserInteractionEnabled = false
+        
+        return view
+    }()
+    
     /// Displays the price of the product
     fileprivate let priceLabel: UILabel = {
         let view = UILabel(frame: .zero)
@@ -164,16 +193,6 @@ final public class ProductsViewController: UIPageViewController {
         view.textAlignment = .right
         view.textColor = .white
         view.translatesAutoresizingMaskIntoConstraints = false
-        
-        return view
-    }()
-    
-    let pageControl: UIPageControl = {
-        // Overriding the standard page control that `UIPageViewController` provides because there isn't a clean way to reposition it
-        let view = UIPageControl(frame: .zero)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.currentPage = 0
-        view.isUserInteractionEnabled = false
         
         return view
     }()

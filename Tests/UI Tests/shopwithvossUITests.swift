@@ -28,9 +28,27 @@ class shopwithvossUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // Use recording to get started writing UI tests.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testCartEditing() {
+        let app = XCUIApplication()
+        let addToCartButton = app.buttons["Add to cart"]
+        addToCartButton.tap()
+        addToCartButton.tap()
+        addToCartButton.tap()
+        app.otherElements["Your cart"].tap()
+        
+        XCTAssertTrue(app.buttons["Check out ($2.85)"].exists)
+        
+        app.navigationBars["Cart (3)"].buttons["Edit"].tap()
+        
+        let tablesQuery = app.tables
+        tablesQuery.children(matching: .cell).element(boundBy: 1).buttons["Delete Peas, $0.95"].tap()
+        tablesQuery.buttons["Delete"].tap()
+        
+        XCTAssertTrue(app.buttons["Check out ($1.90)"].exists)
+
+        let cart2NavigationBar = app.navigationBars["Cart (2)"]
+        cart2NavigationBar.buttons["Done"].tap()
+        cart2NavigationBar.buttons["Cancel"].tap()
     }
     
 }
