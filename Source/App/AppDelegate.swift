@@ -25,6 +25,7 @@
 //
 
 import UIKit
+import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -46,12 +47,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window.tintColor = Prototype.Colors.primary
         
+        backgroundMusicPlayer?.play()
+        
         return true
     }
     
     // MARK: - Private
     
     internal var window: UIWindow?
+    
+    /// Plays shopping background music (if phone isn't muted)
+    fileprivate let backgroundMusicPlayer: AVAudioPlayer? = {
+        guard let url = Bundle.main.url(forResource: "background", withExtension: "m4a") else {
+            return nil
+        }
+        
+        let player = try? AVAudioPlayer(contentsOf: url)
+        player?.volume = 0.2
+        player?.numberOfLoops = -1
+        
+        return player
+    }()
     
     fileprivate func setupCache() {
         let cache = URLCache(memoryCapacity: 1024 * 1024 * 10, diskCapacity: 1024 * 1024 * 50, diskPath: nil)
