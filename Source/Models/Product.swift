@@ -48,7 +48,7 @@ public struct Product {
         self.details = details
         self.name = name
         self.price = price
-        self.videoURL = Bundle.main.url(forResource: "test", withExtension: "m4v") // TODO: placeholder
+        self.videoURL = videoURL
     }
 }
 

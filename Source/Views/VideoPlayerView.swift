@@ -35,7 +35,7 @@ final public class VideoPlayerView: UIView {
     public var url: URL? {
         didSet {
             videoLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
-            
+            videoLayer?.player?.volume = 1.0
             videoLayer?.player = AVPlayer(url: url!)
             videoLayer?.player?.actionAtItemEnd = .none
             videoLayer?.player?.addPeriodicTimeObserver(forInterval: CMTimeMakeWithSeconds(0.1, Int32(NSEC_PER_SEC)), queue: nil, using: { [weak self] (time) in

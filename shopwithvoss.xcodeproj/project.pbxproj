@@ -32,7 +32,10 @@
 		A89F1CC91DB2C635004A869D /* CartTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89F1CC81DB2C635004A869D /* CartTests.swift */; };
 		A89F1CCB1DB2CDAC004A869D /* ProductTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89F1CCA1DB2CDAC004A869D /* ProductTableViewCell.swift */; };
 		A8DA3F6B1DB4184100474230 /* background.m4a in Resources */ = {isa = PBXBuildFile; fileRef = A8DA3F6A1DB4184100474230 /* background.m4a */; };
-		A8FDC6AD1DB2BFB500B76C74 /* test.m4v in Resources */ = {isa = PBXBuildFile; fileRef = A8FDC6AC1DB2BFB500B76C74 /* test.m4v */; };
+		A8DA3F701DB43F5600474230 /* beans.m4v in Resources */ = {isa = PBXBuildFile; fileRef = A8DA3F6C1DB43F5600474230 /* beans.m4v */; };
+		A8DA3F711DB43F5600474230 /* eggs.m4v in Resources */ = {isa = PBXBuildFile; fileRef = A8DA3F6D1DB43F5600474230 /* eggs.m4v */; };
+		A8DA3F721DB43F5600474230 /* milk.m4v in Resources */ = {isa = PBXBuildFile; fileRef = A8DA3F6E1DB43F5600474230 /* milk.m4v */; };
+		A8DA3F731DB43F5600474230 /* peas.m4v in Resources */ = {isa = PBXBuildFile; fileRef = A8DA3F6F1DB43F5600474230 /* peas.m4v */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,7 +87,10 @@
 		A89F1CC81DB2C635004A869D /* CartTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartTests.swift; sourceTree = "<group>"; };
 		A89F1CCA1DB2CDAC004A869D /* ProductTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProductTableViewCell.swift; sourceTree = "<group>"; };
 		A8DA3F6A1DB4184100474230 /* background.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = background.m4a; path = ../../../Downloads/background.m4a; sourceTree = "<group>"; };
-		A8FDC6AC1DB2BFB500B76C74 /* test.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.m4v; sourceTree = "<group>"; };
+		A8DA3F6C1DB43F5600474230 /* beans.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; name = beans.m4v; path = ../../../Downloads/beans.m4v; sourceTree = "<group>"; };
+		A8DA3F6D1DB43F5600474230 /* eggs.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; name = eggs.m4v; path = ../../../Downloads/eggs.m4v; sourceTree = "<group>"; };
+		A8DA3F6E1DB43F5600474230 /* milk.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; name = milk.m4v; path = ../../../Downloads/milk.m4v; sourceTree = "<group>"; };
+		A8DA3F6F1DB43F5600474230 /* peas.m4v */ = {isa = PBXFileReference; lastKnownFileType = file; name = peas.m4v; path = ../../../Downloads/peas.m4v; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,11 +208,14 @@
 		A82D55151DB1763000157856 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A8DA3F6C1DB43F5600474230 /* beans.m4v */,
+				A8DA3F6D1DB43F5600474230 /* eggs.m4v */,
+				A8DA3F6E1DB43F5600474230 /* milk.m4v */,
+				A8DA3F6F1DB43F5600474230 /* peas.m4v */,
 				A8DA3F6A1DB4184100474230 /* background.m4a */,
 				A82D54EB1DB1760700157856 /* Assets.xcassets */,
 				A82D54F01DB1760700157856 /* Info.plist */,
 				A82D54ED1DB1760700157856 /* LaunchScreen.storyboard */,
-				A8FDC6AC1DB2BFB500B76C74 /* test.m4v */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -348,10 +357,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8DA3F711DB43F5600474230 /* eggs.m4v in Resources */,
 				A82D54EF1DB1760700157856 /* LaunchScreen.storyboard in Resources */,
-				A8FDC6AD1DB2BFB500B76C74 /* test.m4v in Resources */,
 				A82D54EC1DB1760700157856 /* Assets.xcassets in Resources */,
 				A8DA3F6B1DB4184100474230 /* background.m4a in Resources */,
+				A8DA3F731DB43F5600474230 /* peas.m4v in Resources */,
+				A8DA3F721DB43F5600474230 /* milk.m4v in Resources */,
+				A8DA3F701DB43F5600474230 /* beans.m4v in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

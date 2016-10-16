@@ -29,15 +29,15 @@ import AVFoundation
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
+        
         let window = UIWindow(frame: UIScreen.main.bounds)
         let controller = ProductsViewController(products: [
-                Prototype.Products.peas,
-                Prototype.Products.eggs,
-                Prototype.Products.milk,
-                Prototype.Products.beans
+            Prototype.Products.eggs,
+            Prototype.Products.beans,
+            Prototype.Products.peas,
+            Prototype.Products.milk
             ])
         window.rootViewController = controller
         window.makeKeyAndVisible()
@@ -63,7 +63,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         let player = try? AVAudioPlayer(contentsOf: url)
-        player?.volume = 0.2
+        player?.volume = 0.05
         player?.numberOfLoops = -1
         
         return player

@@ -42,19 +42,19 @@ internal struct Prototype {
     /// Products used in the prototype
     struct Products {
         static let beans: Product = {
-            return Product(name: NSLocalizedString("Beans", comment: "Beans title"), details: NSLocalizedString("One can of beans", comment: "Beans description"), price: 73, videoURL: nil)
+            return Product(name: NSLocalizedString("Beans", comment: "Beans title"), details: NSLocalizedString("One can of beans", comment: "Beans description"), price: 73, videoURL: Bundle.main.url(forResource: "beans", withExtension: "m4v"))
         }()
         
         static let eggs: Product = {
-            return Product(name: NSLocalizedString("Eggs", comment: "Eggs title"), details: NSLocalizedString("One dozen eggs", comment: "Eggs description"), price: 210, videoURL: nil)
+            return Product(name: NSLocalizedString("Eggs", comment: "Eggs title"), details: NSLocalizedString("One dozen eggs", comment: "Eggs description"), price: 210, videoURL: Bundle.main.url(forResource: "eggs", withExtension: "m4v"))
         }()
         
         static let milk: Product = {
-            return Product(name: NSLocalizedString("Milk", comment: "Milk title"), details: NSLocalizedString("One bottle of milk", comment: "Milk description"), price: 130, videoURL: nil)
+            return Product(name: NSLocalizedString("Milk", comment: "Milk title"), details: NSLocalizedString("One bottle of milk", comment: "Milk description"), price: 130, videoURL: Bundle.main.url(forResource: "milk", withExtension: "m4v"))
         }()
         
         static let peas: Product = {
-            return Product(name: NSLocalizedString("Peas", comment: "Peas title"), details: NSLocalizedString("One bag of peas", comment: "Peas description"), price: 95, videoURL: nil)
+            return Product(name: NSLocalizedString("Peas", comment: "Peas title"), details: NSLocalizedString("One bag of peas", comment: "Peas description"), price: 95, videoURL: Bundle.main.url(forResource: "peas", withExtension: "m4v"))
         }()
     }
 }
