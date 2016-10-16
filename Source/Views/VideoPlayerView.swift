@@ -48,7 +48,7 @@ final public class VideoPlayerView: UIView {
     }
     
     /// Video progress handler
-    var didUpdateProgress: ((Float) -> Void)?
+    public var didUpdateProgress: ((Float) -> Void)?
     
     /// Play or pause the video
     public var isPlaying: Bool = false {
@@ -59,6 +59,11 @@ final public class VideoPlayerView: UIView {
                 videoLayer?.player?.pause()
             }
         }
+    }
+    
+    /// Rewind to the start
+    public func rewind() {
+        videoLayer?.player?.seek(to: kCMTimeZero)
     }
         
     // MARK: - UIView

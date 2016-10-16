@@ -75,6 +75,7 @@ final public class VideoViewController: UIViewController {
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
+        videoPlayerView.rewind()
         videoPlayerView.isPlaying = true
     }
     
