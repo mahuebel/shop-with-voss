@@ -41,18 +41,29 @@ final public class VideoViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
         
         view.addSubview(videoPlayerView)
+        view.addSubview(progressView)
         
         NSLayoutConstraint.activate([
             videoPlayerView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
             videoPlayerView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
             videoPlayerView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0),
-            videoPlayerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
+            videoPlayerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+            
+            progressView.heightAnchor.constraint(equalToConstant: 5),
+            progressView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
+            progressView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
+            progressView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -0),
             ])
         
         videoPlayerView.url = url
+        videoPlayerView.didUpdateProgress = { [weak self] progress in
+            self?.progressView.progress = progress
+        }
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapVideoPlayer(_:)))
         videoPlayerView.addGestureRecognizer(tapGesture)
+
+        //addMotionEffects()
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -75,9 +86,35 @@ final public class VideoViewController: UIViewController {
     
     // MARK: - Private 
     
+    fileprivate func addMotionEffects() {
+        // TODO: needs work, not implemented
+        let motionEffectX = UIInterpolatingMotionEffect(keyPath: "center.x", type: .tiltAlongHorizontalAxis)
+        motionEffectX.minimumRelativeValue = -35
+        motionEffectX.maximumRelativeValue = 35
+        
+        let motionEffectY = UIInterpolatingMotionEffect(keyPath: "center.y", type: .tiltAlongVerticalAxis)
+        motionEffectY.minimumRelativeValue = 35
+        motionEffectY.maximumRelativeValue = -35
+        
+        videoPlayerView.motionEffects = [
+            motionEffectX,
+            motionEffectY
+        ]
+    }
+    
     @objc fileprivate func didTapVideoPlayer(_ gesture: UITapGestureRecognizer) {
         videoPlayerView.isPlaying = !videoPlayerView.isPlaying
     }
+    
+    let progressView: UIProgressView = {
+        let view = UIProgressView(progressViewStyle: .default)
+        view.progress = 0
+        view.progressTintColor = .white
+        view.trackTintColor = UIColor(white: 0, alpha: 0.4)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
+    }()
     
     fileprivate let videoPlayerView: VideoPlayerView = {
         let view = VideoPlayerView(frame: .zero)

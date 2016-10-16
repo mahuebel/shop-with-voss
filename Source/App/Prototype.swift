@@ -35,7 +35,8 @@ internal struct Prototype {
     
     /// Colors used in the prototype
     struct Colors {
-        static let primary = UIColor.green
+        static let primary = UIColor(red:0.98, green:0.42, blue:0.22, alpha:1.00)
+        static let secondary = UIColor(red:0.14, green:0.18, blue:0.22, alpha:1.00)
     }
     
     /// Products used in the prototype

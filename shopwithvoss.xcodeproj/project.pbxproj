@@ -133,9 +133,9 @@
 		A82D54E31DB1760700157856 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				A89B4E0D1DB3032100FADF9D /* Operations */,
 				A82D55281DB17BA200157856 /* App */,
 				A82D55121DB1761200157856 /* Models */,
+				A89B4E0D1DB3032100FADF9D /* Operations */,
 				A82D55141DB1762000157856 /* View Controllers */,
 				A82D55131DB1761C00157856 /* Views */,
 			);
@@ -147,10 +147,10 @@
 			children = (
 				A89F1CC81DB2C635004A869D /* CartTests.swift */,
 				A82D552F1DB188F900157856 /* CartViewTests.swift */,
+				A89B4E091DB2E0C800FADF9D /* CurrencyLayerTests.swift */,
 				A82D54FB1DB1760800157856 /* Info.plist */,
 				A82D55331DB2729600157856 /* PriceFormatterTests.swift */,
 				A82D551C1DB177D700157856 /* ProductTests.swift */,
-				A89B4E091DB2E0C800FADF9D /* CurrencyLayerTests.swift */,
 				A89B4E121DB3141300FADF9D /* list.json */,
 				A89B4E141DB3145A00FADF9D /* rates.json */,
 			);
@@ -221,8 +221,8 @@
 			isa = PBXGroup;
 			children = (
 				A82D54E41DB1760700157856 /* AppDelegate.swift */,
-				A82D55291DB17BAB00157856 /* Prototype.swift */,
 				A89B4E071DB2DD6F00FADF9D /* CurrencyLayer.swift */,
+				A82D55291DB17BAB00157856 /* Prototype.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -232,7 +232,7 @@
 			children = (
 				A89B4E0E1DB3033200FADF9D /* FetchCurrenciesOperation.swift */,
 			);
-			name = Operations;
+			path = Operations;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

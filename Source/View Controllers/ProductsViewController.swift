@@ -54,12 +54,12 @@ final public class ProductsViewController: UIPageViewController {
         stackView.addArrangedSubview(purchaseButton)
         
         view.addSubview(gradientView)
-        view.addSubview(cartView)
         view.addSubview(stackView)
+        view.addSubview(cartView)
         
         NSLayoutConstraint.activate([
-            cartView.topAnchor.constraint(equalTo: view.topAnchor, constant: 20),
-            cartView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            cartView.topAnchor.constraint(equalTo: view.topAnchor, constant: cartEdge),
+            cartView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 200), // initially off screen
             
             gradientView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
             gradientView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
@@ -76,6 +76,9 @@ final public class ProductsViewController: UIPageViewController {
             ])
         
         purchaseButton.addTarget(self, action: #selector(didTapAddToCart(_:)), for: .touchUpInside)
+        
+        let gesture = UIPanGestureRecognizer(target: self, action: #selector(didPanCartView(_:)))
+        cartView.addGestureRecognizer(gesture)
         
         pageControl.numberOfPages = products.count
         setup(with: products.first!)
@@ -96,6 +99,25 @@ final public class ProductsViewController: UIPageViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(forName: Cart.cartChanged, object: nil, queue: OperationQueue.main, using: { [weak self] (notification) in
+            
+            if let weakSelf = self {
+                
+                let pushBehavior = UIPushBehavior(items: [weakSelf.cartView], mode: UIPushBehaviorMode.instantaneous)
+                pushBehavior.pushDirection = CGVector(dx: 2, dy: -4)
+
+                pushBehavior.action = {
+                    if pushBehavior.active == false {
+                        weakSelf.cartView.snapFeedback()
+                        weakSelf.animator.removeBehavior(pushBehavior)
+                    }
+                }
+                weakSelf.animator.addBehavior(pushBehavior)
+                
+                weakSelf.cartView.total = weakSelf.priceFormatter.formattedPrice(for: weakSelf.cart.totalPrice)
+            }
+        })
+        
         cartView.tapHandler = { [weak self] in
             guard let cart = self?.cart else {
                 os_log("No cart available")
@@ -109,17 +131,42 @@ final public class ProductsViewController: UIPageViewController {
         }
     }
     
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if cartSnapBehavior == nil {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
+                if let weakSelf = self {
+                    weakSelf.cartSnapBehavior = UISnapBehavior(item: weakSelf.cartView, snapTo: CGPoint(x: weakSelf.view.frame.size.width - weakSelf.cartEdge, y: weakSelf.cartEdge * 2))
+                    weakSelf.cartSnapBehavior?.damping = 1.0
+                    weakSelf.animator.addBehavior(weakSelf.cartSnapBehavior!)
+                    weakSelf.cartView.snapFeedback()
+                }
+            }
+        }
+    }
+    
     // MARK: - Private
+    
+    fileprivate lazy var animator: UIDynamicAnimator = {
+        return UIDynamicAnimator(referenceView: self.view)
+    }()
     
     fileprivate let cart = Cart()
     
+    fileprivate let cartEdge: CGFloat = 50
+    
+    fileprivate var cartSnapBehavior: UISnapBehavior?
+    
     /// A floating shopping cart button
     fileprivate let cartView: CartView = {
-        let view = CartView(backgroundColor: UIColor.green.withAlphaComponent(0.8), width: 60)
+        let view = CartView(backgroundColor: Prototype.Colors.primary.withAlphaComponent(0.8), width: 60) // TODO: UIAppearance
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isAccessibilityElement = true
         view.accessibilityHint = NSLocalizedString("Shows the contents of your cart", comment: "Hint when you tap the shopping cart button")
         view.accessibilityLabel = NSLocalizedString("Your cart", comment: "Shopping cart and number of items in it") // TODO: include number of items in it
+        view.total = "$0"
+        
         return view
     }()
     
@@ -135,15 +182,60 @@ final public class ProductsViewController: UIPageViewController {
         return view
     }()
     
+    @objc fileprivate func didPanCartView(_ gesture: UIPanGestureRecognizer) {
+        
+        let location = gesture.location(in: view)
+        
+        if gesture.state == .began {
+            cartView.popFeedback()
+            
+            if let snap = cartSnapBehavior {
+                animator.removeBehavior(snap)
+                cartSnapBehavior = nil
+            }
+        }
+        
+        if gesture.state == .ended || gesture.state == .cancelled {
+            cartView.snapFeedback()
+            
+            let x = view.frame.size.width - cartEdge
+            cartSnapBehavior = UISnapBehavior(item: cartView, snapTo: CGPoint(x: x, y: max(min(location.y, view.frame.size.height - 250), cartEdge)))
+            self.animator.addBehavior(cartSnapBehavior!)
+            
+            return
+        }
+        
+        cartView.center = location
+    }
+    
     @objc fileprivate func didTapAddToCart(_ sender: UIButton) {
         sender.isEnabled = false
         
+        let label = UILabel(frame: stackView.convert(priceLabel.frame, to: view))
+        label.text = priceLabel.text
+        label.font = priceLabel.font
+        label.textColor = priceLabel.textColor
+        
+        view.addSubview(label)
+        
+        let animator = UIViewPropertyAnimator(duration: 1.0, curve: .easeInOut) { [weak self] in
+            label.center = self?.cartView.center ?? .zero
+            label.alpha = 0.0
+            label.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        }
+        
         let product = products[pageControl.currentPage]
-        cart.add(product)
+        animator.addCompletion { [weak self] (position) in
+            self?.cart.add(product)
+            label.removeFromSuperview()
+        }
+        
+        animator.startAnimation()
+        
         
         sender.isEnabled = true
     }
-        
+    
     fileprivate let gradientView: GradientView = {
         let view = GradientView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -152,7 +244,7 @@ final public class ProductsViewController: UIPageViewController {
         view.startPoint = 0.5
         view.endPoint = 0.8
         view.from = .clear
-        view.to = UIColor.black.withAlphaComponent(0.8)
+        view.to = Prototype.Colors.secondary.withAlphaComponent(0.8)
         
         return view
     }()
@@ -199,7 +291,7 @@ final public class ProductsViewController: UIPageViewController {
     
     /// Used to format the price into a string for display
     fileprivate let priceFormatter = PriceFormatter()
-
+    
     /// Products being displayed
     fileprivate let products: [Product]
     
@@ -218,7 +310,7 @@ final public class ProductsViewController: UIPageViewController {
     /// Button that adds the product to the cart
     fileprivate let purchaseButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
-        button.backgroundColor = UIColor.green.withAlphaComponent(0.8) // TODO: placeholder
+        button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.8) // TODO: UIAppearance
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
         button.layer.cornerRadius = 5
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -252,7 +344,7 @@ final public class ProductsViewController: UIPageViewController {
             animator.startAnimation()
         }
     }
-
+    
     /// Stack view that contains the views
     fileprivate let stackView: UIStackView = {
         let stackView = UIStackView(frame: .zero)
@@ -264,7 +356,7 @@ final public class ProductsViewController: UIPageViewController {
         
         return stackView
     }()
-
+    
     fileprivate func viewController(at index: Int) -> UIViewController? {
         if index < 0 || index >= products.count {
             return nil

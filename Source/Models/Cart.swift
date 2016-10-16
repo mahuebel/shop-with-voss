@@ -29,16 +29,24 @@ import Foundation
 /// A shopping cart that you can add (or remove) items from
 final public class Cart {
     
+    // MARK: - Notifications
+    
+    static let cartChanged = Notification.Name("CartChanged")
+    
     // MARK: - Editing cart contents
     
     /// Add a product to the cart
     public func add(_ product: Product) {
         products.append(product)
+        
+        NotificationCenter.default.post(name: Cart.cartChanged, object: nil)
     }
     
     /// Remove a product from the cart
     public func remove(at index: Int) {
         products.remove(at: index)
+        
+        NotificationCenter.default.post(name: Cart.cartChanged, object: nil)
     }
     
     // MARK: - Cart details

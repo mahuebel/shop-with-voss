@@ -44,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setupCache()
         
+        window.tintColor = Prototype.Colors.primary
+        
         return true
     }
     

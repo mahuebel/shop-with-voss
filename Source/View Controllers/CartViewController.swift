@@ -93,7 +93,7 @@ final public class CartViewController: UIViewController {
     fileprivate let checkoutButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor.green.withAlphaComponent(0.9) // TODO: placeholder
+        button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.9) // TODO: UIAppearance
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 5
@@ -117,7 +117,7 @@ final public class CartViewController: UIViewController {
     fileprivate let currenciesButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor.darkGray.withAlphaComponent(0.9) // TODO: placeholder
+        button.backgroundColor = Prototype.Colors.secondary.withAlphaComponent(0.9) // TODO: placeholder
         button.setTitle("Change currency", for: .normal)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
         button.setTitleColor(.white, for: .normal)
@@ -218,7 +218,7 @@ final public class CartViewController: UIViewController {
         view.startPoint = 0.9
         view.endPoint = 1.0
         view.from = .clear
-        view.to = UIColor.black.withAlphaComponent(0.4)
+        view.to = Prototype.Colors.secondary.withAlphaComponent(0.4)
         
         return view
     }()
@@ -251,7 +251,7 @@ final public class CartViewController: UIViewController {
         self.title = countString
         
         let totalString = priceFormatter.formattedPrice(for: cart.totalPrice) ?? ""
-        let checkoutString = String(format: NSLocalizedString("Check out (%@)", comment: "Check out button title with cart total"), totalString)
+        let checkoutString = String(format: NSLocalizedString("Pay %@", comment: "Check out button title with cart total"), totalString)
         checkoutButton.setTitle(checkoutString, for: .normal)
     }
 }

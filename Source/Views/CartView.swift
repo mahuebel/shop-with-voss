@@ -35,6 +35,15 @@ final public class CartView: UIView {
     /// Handles when the user taps the cart
     public var tapHandler: ((Void) -> Void)?
     
+    /// The total cost of items in the cart
+    public var total: String? {
+        didSet {
+            let unwrappedTotal = total ?? ""
+            let checkoutString = NSLocalizedString("View cart", comment: "Tap to view cart")
+            textLabel.text = "\(unwrappedTotal)\n\(checkoutString)"
+        }
+    }
+    
     // MARK: - Initialization
     
     /// Returns a new cart view. The `width` will be used as the width and height of the view since it should only be shown as a circle
@@ -44,6 +53,7 @@ final public class CartView: UIView {
         cartButton.backgroundColor = backgroundColor
         cartButton.addTarget(self, action: #selector(didTapCartButton(_:)), for: .touchUpInside)
         addSubview(cartButton)
+        addSubview(textLabel)
         
         NSLayoutConstraint.activate([
             widthAnchor.constraint(equalToConstant: width),
@@ -52,7 +62,10 @@ final public class CartView: UIView {
             cartButton.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 2),
             cartButton.topAnchor.constraint(equalTo: self.topAnchor, constant: 2),
             cartButton.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -2),
-            cartButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -2)
+            cartButton.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -2),
+            
+            textLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
+            textLabel.topAnchor.constraint(equalTo: self.bottomAnchor, constant: 10)
             ])
         
         addBorder()
@@ -61,6 +74,20 @@ final public class CartView: UIView {
     
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Feedback
+    
+    public func popFeedback() {
+        let feedback = UIImpactFeedbackGenerator(style: .medium)
+        feedback.prepare()
+        feedback.impactOccurred()
+    }
+    
+    public func snapFeedback() {
+        let feedback = UIImpactFeedbackGenerator(style: .heavy)
+        feedback.prepare()
+        feedback.impactOccurred()
     }
     
     // MARK: - UIView
@@ -88,15 +115,29 @@ final public class CartView: UIView {
     fileprivate let cartButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("cart", for: .normal) // TODO: placeholder
-        button.setTitleColor(.white, for: .normal)
+        button.setImage(#imageLiteral(resourceName: "cart"), for: .normal)
+        button.tintColor = .white
+        
         return button
+    }()
+    
+    fileprivate let textLabel: UILabel = {
+        let view = UILabel(frame: .zero)
+        view.font = UIFont.preferredFont(forTextStyle: .caption2)
+        view.numberOfLines = 2
+        view.shadowColor = UIColor.darkGray
+        view.shadowOffset = CGSize(width: 0, height: 2)
+        view.textAlignment = .center
+        view.textColor = .white
+        view.translatesAutoresizingMaskIntoConstraints = false
+        
+        return view
     }()
     
     @objc fileprivate func didTapCartButton(_ sender: UIButton) {
         tapHandler?()
     }
-
+    
     fileprivate func updatePath() {
         let cornerRadius = cartButton.frame.size.width / 2
         cartButton.layer.cornerRadius = cornerRadius
