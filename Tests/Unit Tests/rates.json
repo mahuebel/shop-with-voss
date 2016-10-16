@@ -1,0 +1,12 @@
+{
+    "success":true,
+    "terms":"https:\/\/currencylayer.com\/terms",
+    "privacy":"https:\/\/currencylayer.com\/privacy",
+    "timestamp":1476582127,
+    "source":"USD",
+    "quotes":{
+        "USDEUR":0.911404,
+        "USDBTC":0.00157,
+        "USDKYD":0.820383
+    }
+}

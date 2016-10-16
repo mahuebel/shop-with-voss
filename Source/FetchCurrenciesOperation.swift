@@ -1,5 +1,5 @@
 //
-// AppDelegate.swift
+// FetchCurrenciesOperation.swift
 //
 // MIT License
 //
@@ -24,36 +24,25 @@
 // SOFTWARE.
 //
 
-import UIKit
+import Foundation
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-
-        let window = UIWindow(frame: UIScreen.main.bounds)
-        let controller = ProductsViewController(products: [
-                Prototype.Products.peas,
-                Prototype.Products.eggs,
-                Prototype.Products.milk,
-                Prototype.Products.beans
-            ])
-        window.rootViewController = controller
-        window.makeKeyAndVisible()
-        self.window = window
-        
-        setupCache()
-        
-        return true
-    }
+/// Operation that fetches available currencies to use
+final public class FetchCurrenciesOperation: Operation {
     
-    // MARK: - Private
+    /// Handler called after currencies are fetched from network or cache
+    var fetchedCurrenciesHandler: (([String : String]) -> Void)?
     
-    internal var window: UIWindow?
+    /// Handler called if an error occurs
+    var errorHandler: ((Error?) -> Void)?
     
-    fileprivate func setupCache() {
-        let cache = URLCache(memoryCapacity: 1024 * 1024 * 10, diskCapacity: 1024 * 1024 * 50, diskPath: nil)
-        URLCache.shared = cache
+    // MARK: - Operation
+    
+    public override func start() {
+        let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
+        currencyLayer.fetchListOfAvailableCurrencies(success: { [weak self] (currencies) in           
+            self?.fetchedCurrenciesHandler?(currencies)
+        }) { [weak self] (error) in
+            self?.errorHandler?(error)
+        }
     }
 }
-

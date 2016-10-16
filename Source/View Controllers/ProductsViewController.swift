@@ -143,7 +143,7 @@ final public class ProductsViewController: UIPageViewController {
         
         sender.isEnabled = true
     }
-    
+        
     fileprivate let gradientView: GradientView = {
         let view = GradientView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false

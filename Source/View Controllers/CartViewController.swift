@@ -49,15 +49,18 @@ final public class CartViewController: UIViewController {
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        checkoutOptionsStackView.addArrangedSubview(currenciesButton)
+        checkoutOptionsStackView.addArrangedSubview(checkoutButton)
+        
         view.addSubview(tableView)
         view.addSubview(gradientView)
-        view.addSubview(checkoutButton)
+        view.addSubview(checkoutOptionsStackView)
         
         NSLayoutConstraint.activate([
-            checkoutButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
-            checkoutButton.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
-            checkoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
-            checkoutButton.heightAnchor.constraint(equalToConstant: 50),
+            checkoutOptionsStackView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10),
+            checkoutOptionsStackView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10),
+            checkoutOptionsStackView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            checkoutOptionsStackView.heightAnchor.constraint(equalToConstant: 50),
             
             gradientView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 0),
             gradientView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0),
@@ -74,8 +77,9 @@ final public class CartViewController: UIViewController {
         tableView.delegate = self
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 80)) // padding for floating check out button
         
-        
         setBarButtonItems()
+        
+        currenciesButton.addTarget(self, action: #selector(didTapCurrenciesButton(_:)), for: .touchUpInside)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -90,7 +94,7 @@ final public class CartViewController: UIViewController {
         let button = UIButton(type: UIButtonType.system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor.green.withAlphaComponent(0.9) // TODO: placeholder
-        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 5
 
@@ -99,6 +103,33 @@ final public class CartViewController: UIViewController {
         return button
     }()
     
+    let checkoutOptionsStackView: UIStackView = {
+        let stackView = UIStackView(frame: .zero)
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.distribution = .fillEqually
+        stackView.axis = .horizontal
+        stackView.alignment = .fill
+        stackView.spacing = 10
+        
+        return stackView
+    }()
+    
+    fileprivate let currenciesButton: UIButton = {
+        let button = UIButton(type: UIButtonType.system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = UIColor.darkGray.withAlphaComponent(0.9) // TODO: placeholder
+        button.setTitle("Change currency", for: .normal)
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 5
+        
+        button.accessibilityHint = NSLocalizedString("Change currency", comment: "Hint for changing currency")
+        button.accessibilityIdentifier = "currency"
+        return button
+    }()
+    
+    fileprivate let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
+
     @objc fileprivate func didTapCancelButton() {
         dismiss(animated: true, completion: nil)
     }
@@ -110,6 +141,44 @@ final public class CartViewController: UIViewController {
         navigationItem.rightBarButtonItem = newMode ? doneButton : editButton
     }
     
+    @objc fileprivate func didTapCurrenciesButton(_ sender: UIButton) {
+        sender.isEnabled = false
+        
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        
+        let operation = FetchCurrenciesOperation()
+        operation.fetchedCurrenciesHandler = { [weak self] currencies in
+            let controller = UIAlertController(title: NSLocalizedString("Choose new currency", comment: "Currency picker title"), message: nil, preferredStyle: .actionSheet)
+            
+            for (key, value) in currencies.sorted(by: { $0.0 < $1.0 }) {
+                controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { (action) in
+                    print(value)
+                    
+                    self?.fetchRate(for: key)
+                }))
+            }
+            
+            controller.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel currency change"), style: .cancel, handler: nil))
+            
+            DispatchQueue.main.async {
+                self?.present(controller, animated: true, completion: nil)
+                sender.isEnabled = true
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            }
+        }
+        
+        operation.errorHandler = { error in
+            print(error)
+            
+            DispatchQueue.main.async {
+                sender.isEnabled = true
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            }
+        }
+        
+        operationQueue.addOperation(operation)
+    }
+    
     lazy var doneButton: UIBarButtonItem? = {
         return UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(didTapEditButton(_:)))
     }()
@@ -117,6 +186,29 @@ final public class CartViewController: UIViewController {
     lazy var editButton: UIBarButtonItem? = {
         return UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(didTapEditButton(_:)))
     }()
+    
+    fileprivate func fetchRate(for currencyCode: String) {
+        UIApplication.shared.isNetworkActivityIndicatorVisible = true
+        
+        currencyLayer.fetchRealTimeRates(for: currencyCode, success: { (rates) in
+            let conversionKey = "USD\(currencyCode)"
+            let value: Double = rates[conversionKey]! // TODO:
+            
+            DispatchQueue.main.async {
+                self.priceFormatter.currencyCode = currencyCode
+                self.priceFormatter.exchangeRate = value
+                self.tableView.reloadData()
+                self.updateTotals()
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            }
+
+        }) { (error) in
+            print(error) // TODO:
+            DispatchQueue.main.async {
+                UIApplication.shared.isNetworkActivityIndicatorVisible = false
+            }
+        }
+    }
     
     fileprivate let gradientView: GradientView = {
         let view = GradientView(frame: .zero)
@@ -130,10 +222,12 @@ final public class CartViewController: UIViewController {
         
         return view
     }()
+    
+    fileprivate let operationQueue = OperationQueue()
 
     /// Used to format the price into a string for display
     fileprivate let priceFormatter = PriceFormatter()
-
+    
     fileprivate func setBarButtonItems() {
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(didTapCancelButton))
         navigationItem.leftBarButtonItem = cancelButton

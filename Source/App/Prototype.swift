@@ -29,6 +29,9 @@ import UIKit
 
 /// Prototype-specific assets and configuration
 internal struct Prototype {
+        
+    /// Normally you wouldn't want to check your API key in to source control
+    static let CurrencyLayerKey = "30b071c13295ef427beaacb287c6d3d9"
     
     /// Colors used in the prototype
     struct Colors {

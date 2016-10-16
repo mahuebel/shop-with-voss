@@ -27,11 +27,24 @@
 import Foundation
 
 /// Formats a price
-public struct PriceFormatter {
+public final class PriceFormatter {
+    
+    /// Set the currency code to change the currency locale
+    public var currencyCode: String? {
+        didSet {
+            formatter.currencyCode = currencyCode
+        }
+    }
+    
+    /// Set the exchange rate to adjust the cost displayed to the user
+    public var exchangeRate = 1.0
     
     /// Returns a user-friendly price for display
     public func formattedPrice(for cents: Int) -> String? {
-        let dollars: Double = Double(cents) * 0.01 // TODO: support other currencies
+        let adjustedCents: Double = Double(cents) * exchangeRate
+        let dollars: Double = adjustedCents * 0.01
+        
+        formatter.maximumFractionDigits = dollars < 0.01 ? 6 : 2 // hack to support bitcoin (BTC)
         
         return formatter.string(from: NSNumber(value: dollars))
     }
