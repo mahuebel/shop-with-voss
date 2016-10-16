@@ -30,13 +30,17 @@ class shopwithvossUITests: XCTestCase {
     
     func testCartEditing() {
         let app = XCUIApplication()
+        let element = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element(boundBy: 1)
+        element.swipeLeft()
+        element.swipeLeft() // to get to Peas
+        
         let addToCartButton = app.buttons["Add to cart"]
         addToCartButton.tap()
         addToCartButton.tap()
         addToCartButton.tap()
         app.otherElements["Your cart"].tap()
         
-        XCTAssertTrue(app.buttons["Check out ($2.85)"].exists)
+        XCTAssertTrue(app.buttons["Pay $2.85"].exists)
         
         app.navigationBars["Cart (3)"].buttons["Edit"].tap()
         
@@ -44,11 +48,27 @@ class shopwithvossUITests: XCTestCase {
         tablesQuery.children(matching: .cell).element(boundBy: 1).buttons["Delete Peas, $0.95"].tap()
         tablesQuery.buttons["Delete"].tap()
         
-        XCTAssertTrue(app.buttons["Check out ($1.90)"].exists)
+        XCTAssertTrue(app.buttons["Pay $1.90"].exists)
 
         let cart2NavigationBar = app.navigationBars["Cart (2)"]
         cart2NavigationBar.buttons["Done"].tap()
         cart2NavigationBar.buttons["Cancel"].tap()
     }
     
+    func testProductOrder() {
+        let app = XCUIApplication()
+        let element = app.children(matching: .window).element(boundBy: 0).children(matching: .other).element.children(matching: .other).element(boundBy: 1)
+        XCTAssertTrue(app.staticTexts["Eggs"].exists)
+        element.swipeLeft()
+        
+        XCTAssertTrue(app.staticTexts["Beans"].exists)
+        element.swipeLeft()
+        
+        XCTAssertTrue(app.staticTexts["Peas"].exists)
+        element.swipeLeft()
+
+        XCTAssertTrue(app.staticTexts["Milk"].exists)
+        element.swipeLeft()
+        XCTAssertTrue(app.staticTexts["Milk"].exists) // nothing left
+    }
 }
