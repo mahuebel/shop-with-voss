@@ -117,7 +117,7 @@ final public class CartViewController: UIViewController {
     fileprivate let currenciesButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = Prototype.Colors.secondary.withAlphaComponent(0.9) // TODO: placeholder
+        button.backgroundColor = Prototype.Colors.secondary.withAlphaComponent(0.9)
         button.setTitle("Change currency", for: .normal)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
         button.setTitleColor(.white, for: .normal)
@@ -151,9 +151,7 @@ final public class CartViewController: UIViewController {
             let controller = UIAlertController(title: NSLocalizedString("Choose new currency", comment: "Currency picker title"), message: nil, preferredStyle: .actionSheet)
             
             for (key, value) in currencies.sorted(by: { $0.0 < $1.0 }) {
-                controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { (action) in
-                    print(value)
-                    
+                controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { (action) in                    
                     self?.fetchRate(for: key)
                 }))
             }
@@ -167,8 +165,8 @@ final public class CartViewController: UIViewController {
             }
         }
         
-        operation.errorHandler = { error in
-            print(error)
+        operation.errorHandler = { [weak self] error in
+            self?.present(error: error)
             
             DispatchQueue.main.async {
                 sender.isEnabled = true
@@ -192,7 +190,7 @@ final public class CartViewController: UIViewController {
         
         currencyLayer.fetchRealTimeRates(for: currencyCode, success: { (rates) in
             let conversionKey = "USD\(currencyCode)"
-            let value: Double = rates[conversionKey]! // TODO:
+            let value: Double = rates[conversionKey]!
             
             DispatchQueue.main.async {
                 self.priceFormatter.currencyCode = currencyCode
@@ -203,8 +201,8 @@ final public class CartViewController: UIViewController {
             }
 
         }) { (error) in
-            print(error) // TODO:
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                self?.present(error: error)
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
         }
@@ -224,6 +222,14 @@ final public class CartViewController: UIViewController {
     }()
     
     fileprivate let operationQueue = OperationQueue()
+    
+    fileprivate func present(error: Error?) {
+        let message = error?.localizedDescription ?? NSLocalizedString("There was a problem fetching the currency", comment: "Error fetching currency")
+        let controller = UIAlertController(title: nil, message: message, preferredStyle: .alert)
+        controller.addAction(UIAlertAction(title: NSLocalizedString("Okay", comment: "Dismiss alert"), style: .default, handler: nil))
+        
+        self.present(controller, animated: true, completion: nil)
+    }
 
     /// Used to format the price into a string for display
     fileprivate let priceFormatter = PriceFormatter()

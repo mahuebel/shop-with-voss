@@ -62,8 +62,6 @@ final public class VideoViewController: UIViewController {
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapVideoPlayer(_:)))
         videoPlayerView.addGestureRecognizer(tapGesture)
-
-        //addMotionEffects()
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -86,22 +84,6 @@ final public class VideoViewController: UIViewController {
     }
     
     // MARK: - Private 
-    
-    fileprivate func addMotionEffects() {
-        // TODO: needs work, not implemented
-        let motionEffectX = UIInterpolatingMotionEffect(keyPath: "center.x", type: .tiltAlongHorizontalAxis)
-        motionEffectX.minimumRelativeValue = -35
-        motionEffectX.maximumRelativeValue = 35
-        
-        let motionEffectY = UIInterpolatingMotionEffect(keyPath: "center.y", type: .tiltAlongVerticalAxis)
-        motionEffectY.minimumRelativeValue = 35
-        motionEffectY.maximumRelativeValue = -35
-        
-        videoPlayerView.motionEffects = [
-            motionEffectX,
-            motionEffectY
-        ]
-    }
     
     @objc fileprivate func didTapVideoPlayer(_ gesture: UITapGestureRecognizer) {
         videoPlayerView.isPlaying = !videoPlayerView.isPlaying

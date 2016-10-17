@@ -164,7 +164,7 @@ final public class ProductsViewController: UIPageViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isAccessibilityElement = true
         view.accessibilityHint = NSLocalizedString("Shows the contents of your cart", comment: "Hint when you tap the shopping cart button")
-        view.accessibilityLabel = NSLocalizedString("Your cart", comment: "Shopping cart and number of items in it") // TODO: include number of items in it
+        view.accessibilityLabel = NSLocalizedString("Your cart", comment: "Shopping cart and number of items in it")
         view.total = "$0"
         
         return view

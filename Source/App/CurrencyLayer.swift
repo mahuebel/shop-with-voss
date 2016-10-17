@@ -61,7 +61,7 @@ final public class CurrencyLayer {
             }
             
             if urlResponse.statusCode != 200 {
-                failure(nil) // TODO: better error handling
+                failure(nil)
                 return
             }
 
@@ -103,7 +103,7 @@ final public class CurrencyLayer {
             }
             
             if urlResponse.statusCode != 200 {
-                failure(nil) // TODO: better error handling
+                failure(nil)
                 return
             }
             
