@@ -173,6 +173,7 @@ final public class ProductsViewController: UIPageViewController {
     /// Displays the details about the product
     fileprivate let detailsLabel: UILabel = {
         let view = UILabel(frame: .zero)
+        view.adjustsFontForContentSizeCategory = true
         view.font = UIFont.preferredFont(forTextStyle: .title2)
         view.numberOfLines = 1
         view.textAlignment = .left
@@ -258,6 +259,7 @@ final public class ProductsViewController: UIPageViewController {
     /// Displays the name of the product
     fileprivate let nameLabel: UILabel = {
         let view = UILabel(frame: .zero)
+        view.adjustsFontForContentSizeCategory = true
         view.font = UIFont.preferredFont(forTextStyle: .title1)
         view.numberOfLines = 1
         view.textAlignment = .left
@@ -280,6 +282,7 @@ final public class ProductsViewController: UIPageViewController {
     /// Displays the price of the product
     fileprivate let priceLabel: UILabel = {
         let view = UILabel(frame: .zero)
+        view.adjustsFontForContentSizeCategory = true
         view.font = UIFont.preferredFont(forTextStyle: .title1)
         view.numberOfLines = 1
         view.textAlignment = .right
@@ -312,6 +315,7 @@ final public class ProductsViewController: UIPageViewController {
         let button = UIButton(type: UIButtonType.system)
         button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.8) // TODO: UIAppearance
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.layer.cornerRadius = 5
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(NSLocalizedString("Add to cart", comment: "Prompt to add to cart"), for: .normal)

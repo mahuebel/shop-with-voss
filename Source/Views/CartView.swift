@@ -123,6 +123,7 @@ final public class CartView: UIView {
     
     fileprivate let textLabel: UILabel = {
         let view = UILabel(frame: .zero)
+        view.adjustsFontForContentSizeCategory = true
         view.font = UIFont.preferredFont(forTextStyle: .caption2)
         view.numberOfLines = 2
         view.shadowColor = UIColor.darkGray

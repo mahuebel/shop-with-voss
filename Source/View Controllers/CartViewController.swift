@@ -95,6 +95,7 @@ final public class CartViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.9) // TODO: UIAppearance
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 5
 
@@ -120,6 +121,7 @@ final public class CartViewController: UIViewController {
         button.backgroundColor = Prototype.Colors.secondary.withAlphaComponent(0.9)
         button.setTitle("Change currency", for: .normal)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 5
         
@@ -151,7 +153,7 @@ final public class CartViewController: UIViewController {
             let controller = UIAlertController(title: NSLocalizedString("Choose new currency", comment: "Currency picker title"), message: nil, preferredStyle: .actionSheet)
             
             for (key, value) in currencies.sorted(by: { $0.0 < $1.0 }) {
-                controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { (action) in                    
+                controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { (action) in
                     self?.fetchRate(for: key)
                 }))
             }
