@@ -38,20 +38,9 @@ final public class CartViewController: UIViewController {
     init(cart: Cart) {
         self.cart = cart
         super.init(nibName: nil, bundle: nil)
-    }
-    
-    required public init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    // MARK: - View Controller
-    
-    override public func viewDidLoad() {
-        super.viewDidLoad()
         
         checkoutOptionsStackView.addArrangedSubview(currenciesButton)
         checkoutOptionsStackView.addArrangedSubview(checkoutButton)
-        
         view.addSubview(tableView)
         view.addSubview(gradientView)
         view.addSubview(checkoutOptionsStackView)
@@ -76,6 +65,16 @@ final public class CartViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 80)) // padding for floating check out button
+    }
+    
+    required public init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - View Controller
+    
+    override public func viewDidLoad() {
+        super.viewDidLoad()
         
         setBarButtonItems()
         
@@ -94,7 +93,7 @@ final public class CartViewController: UIViewController {
     fileprivate let checkoutButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.9) // TODO: UIAppearance
+        button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.9)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .caption1)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.setTitleColor(.white, for: .normal)
@@ -133,6 +132,20 @@ final public class CartViewController: UIViewController {
     
     fileprivate let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
     
+    fileprivate func currencyPicker(with currencies: [String : String]) -> UIViewController {
+        let controller = UIAlertController(title: NSLocalizedString("Choose new currency", comment: "Currency picker title"), message: nil, preferredStyle: .actionSheet)
+        
+        for (key, value) in currencies.sorted(by: { $0.0 < $1.0 }) {
+            controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { [weak self] (action) in
+                self?.fetchRate(for: key)
+            }))
+        }
+        
+        controller.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel currency change"), style: .cancel, handler: nil))
+        
+        return controller
+    }
+    
     @objc fileprivate func didTapCancelButton() {
         dismiss(animated: true, completion: nil)
     }
@@ -165,18 +178,14 @@ final public class CartViewController: UIViewController {
         
         let operation = FetchCurrenciesOperation(url: url)
         operation.fetchedCurrenciesHandler = { [weak self] currencies in
-            let controller = UIAlertController(title: NSLocalizedString("Choose new currency", comment: "Currency picker title"), message: nil, preferredStyle: .actionSheet)
             
-            for (key, value) in currencies.sorted(by: { $0.0 < $1.0 }) {
-                controller.addAction(UIAlertAction(title: "\(key) - \(value)", style: .default, handler: { (action) in
-                    self?.fetchRate(for: key)
-                }))
+            if let controller = self?.currencyPicker(with: currencies) {
+                DispatchQueue.main.async {
+                    self?.present(controller, animated: true, completion: nil)
+                }
             }
             
-            controller.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel currency change"), style: .cancel, handler: nil))
-            
             DispatchQueue.main.async {
-                self?.present(controller, animated: true, completion: nil)
                 sender.isEnabled = true
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }

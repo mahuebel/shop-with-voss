@@ -48,9 +48,9 @@ final public class ProductsViewController: UIPageViewController {
         productDetailStackView.addArrangedSubview(nameLabel)
         productDetailStackView.addArrangedSubview(priceLabel)
         
+        stackView.addArrangedSubview(pageControl)
         stackView.addArrangedSubview(productDetailStackView)
         stackView.addArrangedSubview(detailsLabel)
-        stackView.addArrangedSubview(pageControl)
         stackView.addArrangedSubview(purchaseButton)
         
         view.addSubview(gradientView)
@@ -99,36 +99,8 @@ final public class ProductsViewController: UIPageViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(forName: Cart.cartChanged, object: nil, queue: OperationQueue.main, using: { [weak self] (notification) in
-            
-            if let weakSelf = self {
-                
-                let pushBehavior = UIPushBehavior(items: [weakSelf.cartView], mode: UIPushBehaviorMode.instantaneous)
-                pushBehavior.pushDirection = CGVector(dx: 2, dy: -4)
-
-                pushBehavior.action = {
-                    if pushBehavior.active == false {
-                        weakSelf.cartView.snapFeedback()
-                        weakSelf.animator.removeBehavior(pushBehavior)
-                    }
-                }
-                weakSelf.animator.addBehavior(pushBehavior)
-                
-                weakSelf.cartView.total = weakSelf.priceFormatter.formattedPrice(for: weakSelf.cart.totalPrice)
-            }
-        })
-        
-        cartView.tapHandler = { [weak self] in
-            guard let cart = self?.cart else {
-                os_log("No cart available")
-                return
-            }
-            
-            let controller = CartViewController(cart: cart)
-            let navController = UINavigationController(rootViewController: controller)
-            
-            self?.present(navController, animated: true, completion: nil)
-        }
+        observeCartChanges()
+        addCartTapHandler()
     }
     
     public override func viewDidAppear(_ animated: Bool) {
@@ -148,6 +120,20 @@ final public class ProductsViewController: UIPageViewController {
     
     // MARK: - Private
     
+    fileprivate func addCartTapHandler() {
+        cartView.tapHandler = { [weak self] in
+            guard let cart = self?.cart else {
+                os_log("No cart available")
+                return
+            }
+            
+            let controller = CartViewController(cart: cart)
+            let navController = UINavigationController(rootViewController: controller)
+            
+            self?.present(navController, animated: true, completion: nil)
+        }
+    }
+    
     fileprivate lazy var animator: UIDynamicAnimator = {
         return UIDynamicAnimator(referenceView: self.view)
     }()
@@ -160,7 +146,7 @@ final public class ProductsViewController: UIPageViewController {
     
     /// A floating shopping cart button
     fileprivate let cartView: CartView = {
-        let view = CartView(backgroundColor: Prototype.Colors.primary.withAlphaComponent(0.8), width: 60) // TODO: UIAppearance
+        let view = CartView(backgroundColor: Prototype.Colors.primary.withAlphaComponent(0.8), width: 60)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isAccessibilityElement = true
         view.accessibilityHint = NSLocalizedString("Shows the contents of your cart", comment: "Hint when you tap the shopping cart button")
@@ -241,7 +227,6 @@ final public class ProductsViewController: UIPageViewController {
         let view = GradientView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isUserInteractionEnabled = false
-        
         view.startPoint = 0.5
         view.endPoint = 0.8
         view.from = .clear
@@ -268,6 +253,27 @@ final public class ProductsViewController: UIPageViewController {
         
         return view
     }()
+    
+    fileprivate func observeCartChanges() {
+        NotificationCenter.default.addObserver(forName: Cart.cartChanged, object: nil, queue: OperationQueue.main, using: { [weak self] (notification) in
+            
+            if let weakSelf = self {
+                
+                let pushBehavior = UIPushBehavior(items: [weakSelf.cartView], mode: UIPushBehaviorMode.instantaneous)
+                pushBehavior.pushDirection = CGVector(dx: 2, dy: -4)
+                
+                pushBehavior.action = {
+                    if pushBehavior.active == false {
+                        weakSelf.cartView.snapFeedback()
+                        weakSelf.animator.removeBehavior(pushBehavior)
+                    }
+                }
+                weakSelf.animator.addBehavior(pushBehavior)
+                
+                weakSelf.cartView.total = weakSelf.priceFormatter.formattedPrice(for: weakSelf.cart.totalPrice)
+            }
+            })
+    }
     
     fileprivate let pageControl: UIPageControl = {
         // Overriding the standard page control that `UIPageViewController` provides because there isn't a clean way to reposition it
@@ -313,7 +319,7 @@ final public class ProductsViewController: UIPageViewController {
     /// Button that adds the product to the cart
     fileprivate let purchaseButton: UIButton = {
         let button = UIButton(type: UIButtonType.system)
-        button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.8) // TODO: UIAppearance
+        button.backgroundColor = Prototype.Colors.primary.withAlphaComponent(0.8)
         button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.layer.cornerRadius = 5
