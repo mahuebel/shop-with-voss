@@ -158,7 +158,12 @@ final public class CartViewController: UIViewController {
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
-        let operation = FetchCurrenciesOperation()
+        guard let url = currencyLayer.currenciesListEndpoint else {
+            present(error: nil)
+            return
+        }
+        
+        let operation = FetchCurrenciesOperation(url: url)
         operation.fetchedCurrenciesHandler = { [weak self] currencies in
             let controller = UIAlertController(title: NSLocalizedString("Choose new currency", comment: "Currency picker title"), message: nil, preferredStyle: .actionSheet)
             
@@ -200,7 +205,12 @@ final public class CartViewController: UIViewController {
     fileprivate func fetchRate(for currencyCode: String) {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
-        let operation = FetchRealtimeRatesOperation(currencyCodes: [currencyCode])
+        guard let url = currencyLayer.realtimeRatesEndpoint else {
+            present(error: nil)
+            return
+        }
+
+        let operation = FetchRealtimeRatesOperation(currencyCodes: [currencyCode], url: url)
         
         operation.fetchedRatesHandler = { rates in
             let conversionKey = "USD\(currencyCode)"

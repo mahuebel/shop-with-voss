@@ -27,14 +27,19 @@
 import Foundation
 import os
 
+/// A service that can provide currency codes and rates
+public protocol CurrencyConversionService {
+    var currenciesListEndpoint: URL? { get }
+    var realtimeRatesEndpoint: URL? { get }
+}
+
 /// Client that interacts with the [CurrencyLayer](https://currencylayer.com/) service. NOTE: Only supports functionality needed for the demo app
-final public class CurrencyLayer {
+final public class CurrencyLayer: CurrencyConversionService {
     
     // MARK: - Initialization
     
-    public init(accessKey: String, urlSession: URLSession = URLSession.shared) {
+    public init(accessKey: String) {
         self.accessKey = accessKey
-        self.session = urlSession
     }
     
     // MARK: - Fetch data
@@ -45,7 +50,7 @@ final public class CurrencyLayer {
     
     // MARK: - Endpoints
     
-    lazy var currenciesListEndpoint: URL? = {
+    lazy public var currenciesListEndpoint: URL? = {
         guard let url = self.buildURL(for: "/api/list") else {
             os_log("bad url")
             return nil
@@ -54,7 +59,7 @@ final public class CurrencyLayer {
         return url
     }()
     
-    lazy var realtimeRatesEndpoint: URL? = {
+    lazy public var realtimeRatesEndpoint: URL? = {
         guard let url = self.buildURL(for: "/api/live") else {
                 os_log("bad url")
                 return nil
@@ -85,8 +90,6 @@ final public class CurrencyLayer {
     // MARK: - Private
     
     fileprivate let baseURL: URL = URL(string: "http://apilayer.net/")!
-    
-    fileprivate let session: URLSession
     
     /// API Key
     fileprivate let accessKey: String

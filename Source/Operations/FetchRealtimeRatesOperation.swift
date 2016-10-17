@@ -38,14 +38,15 @@ final public class FetchRealtimeRatesOperation: Operation {
     // MARK: - Initialization
     
     /// Returns a new operation that fetches currencies
-    public init(session: URLSession = URLSession.shared, currencyCodes: [String]) {
+    public init(session: Session = URLSession.shared, currencyCodes: [String], url: URL) {
         self.session = session
+        self.url = url
         self.currencyCodes = currencyCodes
     }
     
     // MARK: - Operation
     
-    public override func start() {
+    public override func main() {
         let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
         
         guard let urlWithoutCurrencies = currencyLayer.realtimeRatesEndpoint else {
@@ -61,31 +62,31 @@ final public class FetchRealtimeRatesOperation: Operation {
             return
         }
         
-        let task = session.dataTask(with: url) { [weak self] (data, response, error) in
+        let task = (session as Session).dataTask(with: url) { (data, response, error) in
             if let error = error {
-                self?.errorHandler?(error)
+                self.errorHandler?(error)
                 return
             }
             
             guard let urlResponse = response as? HTTPURLResponse, let data = data else {
-                self?.errorHandler?(nil)
+                self.errorHandler?(nil)
                 return
             }
             
             if urlResponse.statusCode != 200 {
-                self?.errorHandler?(nil)
+                self.errorHandler?(nil)
                 return
             }
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
                 if let quotes = json?["quotes"] as? [String : Double] {
-                    self?.fetchedRatesHandler?(quotes)
+                    self.fetchedRatesHandler?(quotes)
                 } else {
-                    self?.errorHandler?(nil)
+                    self.errorHandler?(nil)
                 }
             } catch {
-                self?.errorHandler?(error)
+                self.errorHandler?(error)
                 return
             }
         }
@@ -95,7 +96,9 @@ final public class FetchRealtimeRatesOperation: Operation {
     
     // MARK: - Private
     
-    fileprivate let session: URLSession
+    fileprivate let session: Session
+    
+    fileprivate let url: URL
     
     fileprivate let currencyCodes: [String]
 }

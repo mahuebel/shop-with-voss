@@ -38,45 +38,40 @@ final public class FetchCurrenciesOperation: Operation {
     // MARK: - Initialization
     
     /// Returns a new operation that fetches currencies
-    public init(session: URLSession = URLSession.shared) {
+    public init(url: URL, session: Session = URLSession.shared) {
         self.session = session
+        self.url = url
     }
     
     // MARK: - Operation
     
-    public override func start() {
-        let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
+    public override func main() {
         
-        guard let url = currencyLayer.currenciesListEndpoint else {
-            errorHandler?(nil)
-            return
-        }
-        
-        let task = session.dataTask(with: url) { [weak self] (data, response, error) in
+        let task = session.dataTask(with: url) { (data, response, error) in
             if let error = error {
-                self?.errorHandler?(error)
+                self.errorHandler?(error)
                 return
             }
             
             guard let urlResponse = response as? HTTPURLResponse, let data = data else {
-                self?.errorHandler?(nil)
+                self.errorHandler?(nil)
                 return
             }
             
             if urlResponse.statusCode != 200 {
-                self?.errorHandler?(nil)
+                self.errorHandler?(nil)
                 return
             }
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
                 if let currencies = json?["currencies"] as? [String : String] {
-                    self?.fetchedCurrenciesHandler?(currencies)
+                    self.fetchedCurrenciesHandler?(currencies)
                 } else {
-                    self?.errorHandler?(nil)
+                    self.errorHandler?(nil)
                 }
             } catch {
-                self?.errorHandler?(error)
+                self.errorHandler?(error)
                 return
             }
         }
@@ -86,5 +81,7 @@ final public class FetchCurrenciesOperation: Operation {
     
     // MARK: - Private
     
-    fileprivate let session: URLSession
+    fileprivate let session: Session
+    
+    fileprivate let url: URL
 }

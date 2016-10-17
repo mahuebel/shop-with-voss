@@ -24,6 +24,8 @@
 		A82D55361DB2923900157856 /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82D55351DB2923900157856 /* CartViewController.swift */; };
 		A82D55381DB29C4F00157856 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A82D55371DB29C4F00157856 /* GradientView.swift */; };
 		A83825A71DB472EF0021331D /* FetchRealtimeRatesOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83825A61DB472EF0021331D /* FetchRealtimeRatesOperation.swift */; };
+		A83825A91DB476680021331D /* NetworkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83825A81DB476680021331D /* NetworkTests.swift */; };
+		A83825AC1DB47A630021331D /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = A83825AB1DB47A630021331D /* Session.swift */; };
 		A89B4E081DB2DD6F00FADF9D /* CurrencyLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89B4E071DB2DD6F00FADF9D /* CurrencyLayer.swift */; };
 		A89B4E0A1DB2E0C800FADF9D /* CurrencyLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89B4E091DB2E0C800FADF9D /* CurrencyLayerTests.swift */; };
 		A89B4E0F1DB3033200FADF9D /* FetchCurrenciesOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A89B4E0E1DB3033200FADF9D /* FetchCurrenciesOperation.swift */; };
@@ -80,6 +82,8 @@
 		A82D55351DB2923900157856 /* CartViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		A82D55371DB29C4F00157856 /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		A83825A61DB472EF0021331D /* FetchRealtimeRatesOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchRealtimeRatesOperation.swift; sourceTree = "<group>"; };
+		A83825A81DB476680021331D /* NetworkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkTests.swift; sourceTree = "<group>"; };
+		A83825AB1DB47A630021331D /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
 		A89B4E071DB2DD6F00FADF9D /* CurrencyLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyLayer.swift; sourceTree = "<group>"; };
 		A89B4E091DB2E0C800FADF9D /* CurrencyLayerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyLayerTests.swift; sourceTree = "<group>"; };
 		A89B4E0E1DB3033200FADF9D /* FetchCurrenciesOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchCurrenciesOperation.swift; sourceTree = "<group>"; };
@@ -146,6 +150,7 @@
 				A82D55281DB17BA200157856 /* App */,
 				A82D55121DB1761200157856 /* Models */,
 				A89B4E0D1DB3032100FADF9D /* Operations */,
+				A83825AA1DB47A590021331D /* Protocols */,
 				A82D55141DB1762000157856 /* View Controllers */,
 				A82D55131DB1761C00157856 /* Views */,
 			);
@@ -159,6 +164,7 @@
 				A82D552F1DB188F900157856 /* CartViewTests.swift */,
 				A89B4E091DB2E0C800FADF9D /* CurrencyLayerTests.swift */,
 				A82D54FB1DB1760800157856 /* Info.plist */,
+				A83825A81DB476680021331D /* NetworkTests.swift */,
 				A82D55331DB2729600157856 /* PriceFormatterTests.swift */,
 				A82D551C1DB177D700157856 /* ProductTests.swift */,
 				A89B4E121DB3141300FADF9D /* list.json */,
@@ -239,6 +245,14 @@
 				A82D55291DB17BAB00157856 /* Prototype.swift */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		A83825AA1DB47A590021331D /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				A83825AB1DB47A630021331D /* Session.swift */,
+			);
+			path = Protocols;
 			sourceTree = "<group>";
 		};
 		A89B4E0D1DB3032100FADF9D /* Operations */ = {
@@ -405,6 +419,7 @@
 				A82D54E51DB1760700157856 /* AppDelegate.swift in Sources */,
 				A82D552E1DB188D700157856 /* CartView.swift in Sources */,
 				A82D55321DB19F2A00157856 /* PriceFormatter.swift in Sources */,
+				A83825AC1DB47A630021331D /* Session.swift in Sources */,
 				A89B4E0F1DB3033200FADF9D /* FetchCurrenciesOperation.swift in Sources */,
 				A82D55361DB2923900157856 /* CartViewController.swift in Sources */,
 				A82D55211DB179F300157856 /* VideoPlayerView.swift in Sources */,
@@ -416,6 +431,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A82D55301DB188F900157856 /* CartViewTests.swift in Sources */,
+				A83825A91DB476680021331D /* NetworkTests.swift in Sources */,
 				A82D551D1DB177D700157856 /* ProductTests.swift in Sources */,
 				A82D55341DB2729600157856 /* PriceFormatterTests.swift in Sources */,
 				A89B4E0A1DB2E0C800FADF9D /* CurrencyLayerTests.swift in Sources */,
