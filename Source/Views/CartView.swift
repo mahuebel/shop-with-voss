@@ -126,8 +126,8 @@ final public class CartView: UIView {
         view.adjustsFontForContentSizeCategory = true
         view.font = UIFont.preferredFont(forTextStyle: .caption2)
         view.numberOfLines = 2
-        view.shadowColor = UIColor.darkGray
-        view.shadowOffset = CGSize(width: 0, height: 2)
+        view.shadowColor = UIColor.black
+        view.shadowOffset = CGSize(width: 1, height: 1)
         view.textAlignment = .center
         view.textColor = .white
         view.translatesAutoresizingMaskIntoConstraints = false

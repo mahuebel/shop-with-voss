@@ -257,20 +257,21 @@ final public class ProductsViewController: UIPageViewController {
     fileprivate func observeCartChanges() {
         NotificationCenter.default.addObserver(forName: Cart.cartChanged, object: nil, queue: OperationQueue.main, using: { [weak self] (notification) in
             
-            if let weakSelf = self {
-                
-                let pushBehavior = UIPushBehavior(items: [weakSelf.cartView], mode: UIPushBehaviorMode.instantaneous)
+            if let cartView = self?.cartView {
+                let pushBehavior = UIPushBehavior(items: [cartView], mode: UIPushBehaviorMode.instantaneous)
                 pushBehavior.pushDirection = CGVector(dx: 2, dy: -4)
                 
                 pushBehavior.action = {
                     if pushBehavior.active == false {
-                        weakSelf.cartView.snapFeedback()
-                        weakSelf.animator.removeBehavior(pushBehavior)
+                        self?.cartView.snapFeedback()
+                        self?.animator.removeBehavior(pushBehavior)
                     }
                 }
-                weakSelf.animator.addBehavior(pushBehavior)
-                
-                weakSelf.cartView.total = weakSelf.priceFormatter.formattedPrice(for: weakSelf.cart.totalPrice)
+                self?.animator.addBehavior(pushBehavior)
+            }
+            
+            if let cart = self?.cart, let priceString = self?.priceFormatter.formattedPrice(for: cart.totalPrice) {
+                self?.cartView.total = priceString
             }
             })
     }
