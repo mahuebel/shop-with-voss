@@ -1,3 +1,5 @@
+![Shop with Voss](preview.jpg)
+
 # Shop with Voss
 An iOS 10 Swift Video Shopping App Example
 
