@@ -200,7 +200,9 @@ final public class CartViewController: UIViewController {
     fileprivate func fetchRate(for currencyCode: String) {
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         
-        currencyLayer.fetchRealTimeRates(for: currencyCode, success: { (rates) in
+        let operation = FetchRealtimeRatesOperation(currencyCodes: [currencyCode])
+        
+        operation.fetchedRatesHandler = { rates in
             let conversionKey = "USD\(currencyCode)"
             let value: Double = rates[conversionKey]!
             
@@ -211,13 +213,16 @@ final public class CartViewController: UIViewController {
                 self.updateTotals()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
-            
-        }) { (error) in
+        }
+        
+        operation.errorHandler = { error in
             DispatchQueue.main.async { [weak self] in
                 self?.present(error: error)
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
         }
+
+        operationQueue.addOperation(operation)
     }
     
     fileprivate let gradientView: GradientView = {

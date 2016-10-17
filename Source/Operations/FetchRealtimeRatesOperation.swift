@@ -1,5 +1,5 @@
 //
-// FetchCurrenciesOperation.swift
+// FetchRealtimeRatesOperation.swift
 //
 // MIT License
 //
@@ -26,11 +26,11 @@
 
 import Foundation
 
-/// Operation that fetches available currencies to use
-final public class FetchCurrenciesOperation: Operation {
+/// Operation that fetches realtime rates for currency codes
+final public class FetchRealtimeRatesOperation: Operation {
     
-    /// Handler called after currencies are fetched from network
-    public var fetchedCurrenciesHandler: (([String : String]) -> Void)?
+    /// Handler called after rates are fetched from network
+    public var fetchedRatesHandler: (([String : Double]) -> Void)?
     
     /// Handler called if an error occurs
     public var errorHandler: ((Error?) -> Void)?
@@ -38,8 +38,9 @@ final public class FetchCurrenciesOperation: Operation {
     // MARK: - Initialization
     
     /// Returns a new operation that fetches currencies
-    public init(session: URLSession = URLSession.shared) {
+    public init(session: URLSession = URLSession.shared, currencyCodes: [String]) {
         self.session = session
+        self.currencyCodes = currencyCodes
     }
     
     // MARK: - Operation
@@ -47,7 +48,15 @@ final public class FetchCurrenciesOperation: Operation {
     public override func start() {
         let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
         
-        guard let url = currencyLayer.currenciesListEndpoint else {
+        guard let urlWithoutCurrencies = currencyLayer.realtimeRatesEndpoint else {
+            errorHandler?(nil)
+            return
+        }
+        
+        var components = URLComponents(url: urlWithoutCurrencies, resolvingAgainstBaseURL: false)
+        let commaSeperatedCurrencies = currencyCodes.joined(separator: ",")
+        components?.queryItems?.append(URLQueryItem(name: "currencies", value: commaSeperatedCurrencies))
+        guard let url = components?.url else {
             errorHandler?(nil)
             return
         }
@@ -70,8 +79,8 @@ final public class FetchCurrenciesOperation: Operation {
             
             do {
                 let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
-                if let currencies = json?["currencies"] as? [String : String] {
-                    self?.fetchedCurrenciesHandler?(currencies)
+                if let quotes = json?["quotes"] as? [String : Double] {
+                    self?.fetchedRatesHandler?(quotes)
                 } else {
                     self?.errorHandler?(nil)
                 }
@@ -87,4 +96,6 @@ final public class FetchCurrenciesOperation: Operation {
     // MARK: - Private
     
     fileprivate let session: URLSession
+    
+    fileprivate let currencyCodes: [String]
 }

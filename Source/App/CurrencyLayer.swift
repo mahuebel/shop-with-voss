@@ -30,6 +30,8 @@ import os
 /// Client that interacts with the [CurrencyLayer](https://currencylayer.com/) service. NOTE: Only supports functionality needed for the demo app
 final public class CurrencyLayer {
     
+    // MARK: - Initialization
+    
     public init(accessKey: String, urlSession: URLSession = URLSession.shared) {
         self.accessKey = accessKey
         self.session = urlSession
@@ -41,101 +43,35 @@ final public class CurrencyLayer {
     public typealias SuccessHandler = (([String : String]) -> Void)
     public typealias RateSuccessHandler = (([String : Double]) -> Void)
     
-    public func fetchListOfAvailableCurrencies(success: @escaping SuccessHandler, failure: @escaping FailureHandler) {
-        
-        guard let url = buildURL(for: "/api/list") else {
+    // MARK: - Endpoints
+    
+    lazy var currenciesListEndpoint: URL? = {
+        guard let url = self.buildURL(for: "/api/list") else {
             os_log("bad url")
-            failure(nil)
-            return
+            return nil
         }
         
-        let task = session.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                failure(error)
-                return
-            }
-            
-            guard let urlResponse = response as? HTTPURLResponse, let data = data else {
-                failure(nil)
-                return
-            }
-            
-            if urlResponse.statusCode != 200 {
-                failure(nil)
-                return
-            }
-
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
-                if let quotes = json?["currencies"] as? [String : String] {
-                    success(quotes)
-                } else {
-                    failure(nil)
-                }
-            } catch {
-                failure(error)
-                return
-            }
-        }
-        
-        task.resume()
-    }
+        return url
+    }()
     
-    public func fetchRealTimeRates(for currencyCode: String, success: @escaping RateSuccessHandler, failure: @escaping FailureHandler) {
-        
-        guard let url = buildURL(for: "/api/live", with: [
-            URLQueryItem(name: "currencies", value: currencyCode)
-            ]) else {
+    lazy var realtimeRatesEndpoint: URL? = {
+        guard let url = self.buildURL(for: "/api/live") else {
                 os_log("bad url")
-                failure(nil)
-                return
+                return nil
         }
         
-        let task = session.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                failure(error)
-                return
-            }
-            
-            guard let urlResponse = response as? HTTPURLResponse, let data = data else {
-                failure(nil)
-                return
-            }
-            
-            if urlResponse.statusCode != 200 {
-                failure(nil)
-                return
-            }
-            
-            do {
-                let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String : Any]
-                if let quotes = json?["quotes"] as? [String : Double] {
-                    success(quotes)
-                } else {
-                    failure(nil)
-                }
-            } catch {
-                failure(error)
-                return
-            }
-        }
-        
-        task.resume()
-    }
+        return url
+    }()
     
-    internal func buildURL(for path: String, with additionalQueryItems: [URLQueryItem]? = nil) -> URL? {
+    internal func buildURL(for path: String) -> URL? {
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
         components?.path = path
         
-        var items = [
+        let items = [
             URLQueryItem(name: "access_key", value: accessKey),
             URLQueryItem(name: "format", value: "1"), // for json support
         ]
-        
-        if let additionalQueryItems = additionalQueryItems {
-            items += additionalQueryItems
-        }
-        
+
         components?.queryItems = items
         
         guard let url = components?.url else {
