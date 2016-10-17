@@ -80,6 +80,7 @@ final public class CartViewController: UIViewController {
         setBarButtonItems()
         
         currenciesButton.addTarget(self, action: #selector(didTapCurrenciesButton(_:)), for: .touchUpInside)
+        checkoutButton.addTarget(self, action: #selector(didTapCheckoutButton), for: .touchUpInside)
     }
     
     public override func viewWillAppear(_ animated: Bool) {
@@ -98,7 +99,7 @@ final public class CartViewController: UIViewController {
         button.titleLabel?.adjustsFontForContentSizeCategory = true
         button.setTitleColor(.white, for: .normal)
         button.layer.cornerRadius = 5
-
+        
         button.accessibilityHint = NSLocalizedString("Purchase the items in the cart", comment: "Hint for check out button")
         button.accessibilityIdentifier = "checkout"
         return button
@@ -131,9 +132,18 @@ final public class CartViewController: UIViewController {
     }()
     
     fileprivate let currencyLayer = CurrencyLayer(accessKey: Prototype.CurrencyLayerKey)
-
+    
     @objc fileprivate func didTapCancelButton() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc fileprivate func didTapCheckoutButton() {
+        let totalString = priceFormatter.formattedPrice(for: cart.totalPrice) ?? ""
+        let checkoutString = String(format: NSLocalizedString("Thanks for shopping! Your total would have been %@ if this was real!", comment: "Thanks for playing message"), totalString)
+        let controller = UIAlertController(title: nil, message: checkoutString, preferredStyle: .alert)
+        controller.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: "Cancel alert"), style: .cancel, handler: nil))
+        controller.addAction(UIAlertAction(title: NSLocalizedString("💩 I thought it was real", comment: "Disappointed message"), style: .default, handler: nil))
+        present(controller, animated: true, completion: nil)
     }
     
     @objc fileprivate func didTapEditButton(_ sender: UIBarButtonItem) {
@@ -201,7 +211,7 @@ final public class CartViewController: UIViewController {
                 self.updateTotals()
                 UIApplication.shared.isNetworkActivityIndicatorVisible = false
             }
-
+            
         }) { (error) in
             DispatchQueue.main.async { [weak self] in
                 self?.present(error: error)
@@ -232,7 +242,7 @@ final public class CartViewController: UIViewController {
         
         self.present(controller, animated: true, completion: nil)
     }
-
+    
     /// Used to format the price into a string for display
     fileprivate let priceFormatter = PriceFormatter()
     
